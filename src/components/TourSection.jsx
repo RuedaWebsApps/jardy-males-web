@@ -2,15 +2,17 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { MapPin, Ticket, ArrowUpRight, X, CheckCircle2, Clock } from 'lucide-react';
 import { TOUR_DATES } from '../data/artistData';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function TourSection() {
+  const { lang, t } = useLanguage();
   const [selectedShow, setSelectedShow] = useState(null);
   const [tier, setTier] = useState("general");
   const [qty, setQty] = useState(2);
   const [reserved, setReserved] = useState(false);
 
   const openModal = (show) => {
-    if (show.status === "Agotado") return;
+    if (show.statusKey === "soldout") return;
     setSelectedShow(show);
     setTier("general");
     setQty(2);
@@ -36,22 +38,25 @@ export default function TourSection() {
         >
           <div>
             <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-[10px] uppercase tracking-[0.22em] text-[#E2FF32] font-semibold mb-4">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#E2FF32] animate-ping" /> Texas Tour 2026
+              <span className="w-1.5 h-1.5 rounded-full bg-[#E2FF32] animate-ping" /> {t.tour.eyebrow}
             </span>
             <h2 className="font-display font-extrabold text-4xl sm:text-6xl uppercase tracking-[-0.03em] leading-[0.95]">
-              Fechas <span className="font-editorial italic font-normal text-zinc-300">En Vivo</span>
+              {t.tour.titleMain}{" "}
+              <span className="font-editorial italic font-normal text-zinc-300">
+                {t.tour.titleAccent}
+              </span>
             </h2>
           </div>
           <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">
-            4 Paradas Oficiales • Producción Inmersiva
+            {t.tour.subtitle}
           </p>
         </motion.div>
 
         {/* Interactive Tour Rows */}
         <div className="space-y-3">
           {TOUR_DATES.map((show, idx) => {
-            const isSoldOut = show.status === "Agotado";
-            const isLow = show.status === "Pocas Entradas";
+            const isSoldOut = show.statusKey === "soldout";
+            const isLow = show.statusKey === "low";
 
             return (
               <motion.div
@@ -74,11 +79,10 @@ export default function TourSection() {
                     <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r from-[#E2FF32]/[0.06] via-transparent to-transparent" />
                   )}
 
-                  {/* Left: Date Badge + Venue */}
                   <div className="relative z-10 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8">
                     <div className="flex sm:flex-col items-baseline sm:items-start gap-2 sm:gap-0 min-w-[100px]">
                       <span className="font-display font-extrabold text-2xl sm:text-3xl tracking-tight text-white group-hover:text-[#E2FF32] transition-colors">
-                        {show.date}
+                        {show.date[lang]}
                       </span>
                       <span className="text-[11px] font-mono-tech uppercase tracking-[0.2em] text-zinc-500">
                         {show.year}
@@ -92,7 +96,7 @@ export default function TourSection() {
                         </h3>
                         {isLow && (
                           <span className="px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-300 text-[10px] font-bold uppercase tracking-widest">
-                            Últimos Boletos
+                            {t.tour.lowTickets}
                           </span>
                         )}
                       </div>
@@ -108,12 +112,11 @@ export default function TourSection() {
                     </div>
                   </div>
 
-                  {/* Right: Price & CTA */}
                   <div className="relative z-10 flex items-center justify-between md:justify-end gap-5 pt-3 md:pt-0 border-t md:border-t-0 border-white/10">
                     {!isSoldOut && (
                       <div className="text-left md:text-right">
                         <span className="block text-[10px] uppercase tracking-[0.18em] text-zinc-500">
-                          Desde
+                          {t.tour.from}
                         </span>
                         <span className="font-display font-bold text-lg text-white">
                           ${show.priceGeneral} USD
@@ -133,7 +136,7 @@ export default function TourSection() {
                           : "pl-5 pr-2 py-2 bg-white text-black group-hover:bg-[#E2FF32] active:scale-[0.97] cursor-pointer"
                       }`}
                     >
-                      <span>{isSoldOut ? "Sold Out" : "Boletos"}</span>
+                      <span>{isSoldOut ? t.tour.soldOutBtn : t.tour.ticketsBtn}</span>
                       {!isSoldOut && (
                         <span className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">
                           <ArrowUpRight size={15} />
@@ -170,7 +173,7 @@ export default function TourSection() {
                 <div className="flex items-start justify-between gap-4 border-b border-white/10 pb-5">
                   <div>
                     <span className="text-[10px] uppercase tracking-[0.22em] text-[#E2FF32] font-bold">
-                      Taquilla Oficial • {selectedShow.date} {selectedShow.year}
+                      {t.tour.modalEyebrow} • {selectedShow.date[lang]} {selectedShow.year}
                     </span>
                     <h3 className="font-display font-extrabold text-2xl sm:text-3xl uppercase mt-1">
                       {selectedShow.city}
@@ -197,22 +200,23 @@ export default function TourSection() {
                       <CheckCircle2 size={28} />
                     </div>
                     <h4 className="font-display font-bold text-2xl uppercase">
-                      ¡Pre-Reserva Registrada!
+                      {t.tour.reservedTitle}
                     </h4>
                     <p className="text-sm text-zinc-400 max-w-sm mx-auto">
-                      Tus {qty} accesos ({tier === "vip" ? "VIP Meet & Greet" : "General Floor"}) para{" "}
-                      <strong className="text-white">{selectedShow.venue}</strong> están listos para continuar con el checkout oficial.
+                      {t.tour.reservedBody1} {qty} {t.tour.reservedBody2} (
+                      {tier === "vip" ? "VIP Meet & Greet" : "General Floor"}) {t.tour.reservedBody3}{" "}
+                      <strong className="text-white">{selectedShow.venue}</strong>{" "}
+                      {t.tour.reservedBody4}
                     </p>
                     <button
                       onClick={() => setSelectedShow(null)}
                       className="mt-2 px-6 py-3 rounded-full bg-[#E2FF32] text-black text-xs font-bold uppercase tracking-[0.18em] cursor-pointer"
                     >
-                      Listo
+                      {t.tour.doneBtn}
                     </button>
                   </motion.div>
                 ) : (
                   <>
-                    {/* Tier Selector */}
                     <div className="grid grid-cols-2 gap-3">
                       <button
                         onClick={() => setTier("general")}
@@ -228,7 +232,7 @@ export default function TourSection() {
                         <span className="font-display font-extrabold text-2xl text-white mt-1 block">
                           ${selectedShow.priceGeneral}
                         </span>
-                        <span className="text-[11px] text-zinc-500">Acceso cancha general</span>
+                        <span className="text-[11px] text-zinc-500">{t.tour.generalDesc}</span>
                       </button>
 
                       <button
@@ -245,14 +249,13 @@ export default function TourSection() {
                         <span className="font-display font-extrabold text-2xl text-white mt-1 block">
                           ${selectedShow.priceVip}
                         </span>
-                        <span className="text-[11px] text-zinc-500">Primera fila + Foto backstage</span>
+                        <span className="text-[11px] text-zinc-500">{t.tour.vipDesc}</span>
                       </button>
                     </div>
 
-                    {/* Quantity Selector */}
                     <div className="flex items-center justify-between p-4 rounded-2xl bg-white/[0.03] border border-white/10">
                       <span className="text-xs uppercase tracking-[0.18em] text-zinc-300">
-                        Cantidad de Boletos
+                        {t.tour.qtyLabel}
                       </span>
                       <div className="flex items-center gap-3">
                         <button
@@ -273,11 +276,10 @@ export default function TourSection() {
                       </div>
                     </div>
 
-                    {/* Total & Confirm */}
                     <div className="flex items-center justify-between pt-2">
                       <div>
                         <span className="block text-[10px] uppercase tracking-widest text-zinc-500">
-                          Total Estimado
+                          {t.tour.totalLabel}
                         </span>
                         <span className="font-display font-extrabold text-2xl text-white">
                           ${unitPrice * qty} USD
@@ -288,7 +290,7 @@ export default function TourSection() {
                         onClick={() => setReserved(true)}
                         className="flex items-center gap-3 bg-[#E2FF32] hover:bg-white text-black px-6 py-3.5 rounded-full text-xs font-bold uppercase tracking-[0.16em] active:scale-[0.97] transition cursor-pointer"
                       >
-                        <Ticket size={15} /> Asegurar Boletos
+                        <Ticket size={15} /> {t.tour.confirmBtn}
                       </button>
                     </div>
                   </>

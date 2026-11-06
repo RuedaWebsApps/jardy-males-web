@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { Mail, Phone, Copy, Check, ArrowUpRight } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Footer() {
+  const { t } = useLanguage();
   const [copied, setCopied] = useState(false);
   const email = "redesnegocios011@gmail.com";
 
@@ -22,13 +24,14 @@ export default function Footer() {
           transition={{ duration: 0.65, ease: [0.23, 1, 0.32, 1] }}
           className="grid grid-cols-1 lg:grid-cols-12 gap-10 pb-16 border-b border-white/10"
         >
-          {/* Booking Callout */}
           <div className="lg:col-span-7 space-y-5">
             <span className="inline-block px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-[10px] uppercase tracking-[0.22em] text-[#E2FF32] font-bold">
-              Management & Booking Internacional
+              {t.footer.eyebrow}
             </span>
             <h2 className="font-display font-extrabold text-3xl sm:text-5xl uppercase tracking-tight leading-none">
-              Lleva el show de <span className="font-editorial italic font-normal text-zinc-300">Jardy Males</span> a tu ciudad
+              {t.footer.titlePart1}{" "}
+              <span className="font-editorial italic font-normal text-zinc-300">Jardy Males</span>{" "}
+              {t.footer.titlePart2}
             </h2>
 
             <div className="flex flex-wrap items-center gap-3 pt-2">
@@ -40,7 +43,7 @@ export default function Footer() {
                 <span>{email}</span>
                 {copied ? (
                   <span className="inline-flex items-center gap-1 text-[#E2FF32] font-bold">
-                    <Check size={13} /> Copiado
+                    <Check size={13} /> {t.footer.copied}
                   </span>
                 ) : (
                   <Copy size={13} className="text-zinc-400" />
@@ -57,7 +60,6 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Social Ecosystem Links */}
           <div className="lg:col-span-5 flex flex-col justify-between lg:items-end gap-6">
             <div className="flex flex-wrap gap-3">
               {[
@@ -80,12 +82,11 @@ export default function Footer() {
             </div>
 
             <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">
-              Austin, Texas • Estados Unidos
+              {t.footer.location}
             </p>
           </div>
         </motion.div>
 
-        {/* Monumental Display Wordmark */}
         <div className="py-8 select-none overflow-hidden text-center">
           <p className="font-display font-extrabold text-[13vw] leading-[0.85] tracking-[-0.04em] uppercase text-white/[0.06] hover:text-white/[0.12] transition-colors duration-500">
             JARDY MALES
@@ -93,9 +94,9 @@ export default function Footer() {
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] uppercase tracking-[0.2em] text-zinc-500 pt-4">
-          <span>© 2026 Jardy Males. Todos los derechos reservados.</span>
+          <span>{t.footer.rights}</span>
           <span>
-            Desarrollado por <strong className="text-zinc-300">Rueda la Rola Media</strong>
+            {t.footer.developedBy} <strong className="text-zinc-300">Rueda la Rola Media</strong>
           </span>
         </div>
       </div>

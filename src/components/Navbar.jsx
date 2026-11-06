@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ShoppingBag, ArrowUpRight } from 'lucide-react';
+import { ShoppingBag, ArrowUpRight, Globe } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 const InstagramIcon = ({ size = 18 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
@@ -16,18 +17,19 @@ const TikTokIcon = ({ size = 18 }) => (
   </svg>
 );
 
-const NAV_LINKS = [
-  { href: "#musica", label: "Música" },
-  { href: "#galeria", label: "Universo" },
-  { href: "#tour", label: "Tour '26" },
-  { href: "#tienda", label: "Drop 001" },
-  { href: "#contacto", label: "Booking" },
-];
-
 export default function Navbar({ cartCount = 0, onOpenCart, isPlaying, currentTrack, onTogglePlay }) {
+  const { lang, setLang, t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("hero");
+
+  const navLinks = [
+    { href: "#musica", label: t.nav.music },
+    { href: "#galeria", label: t.nav.universe },
+    { href: "#tour", label: t.nav.tour },
+    { href: "#tienda", label: t.nav.merch },
+    { href: "#contacto", label: t.nav.booking },
+  ];
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 36);
@@ -60,16 +62,16 @@ export default function Navbar({ cartCount = 0, onOpenCart, isPlaying, currentTr
           initial={{ y: -32, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.65, ease: [0.23, 1, 0.32, 1] }}
-          className={`pointer-events-auto flex items-center justify-between gap-3 sm:gap-6 rounded-full border transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+          className={`pointer-events-auto flex items-center justify-between gap-2.5 sm:gap-5 rounded-full border transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${
             scrolled
-              ? "w-full max-w-4xl px-4 sm:px-5 py-2.5 bg-[#08080a]/85 backdrop-blur-2xl border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.75)]"
+              ? "w-full max-w-5xl px-4 sm:px-5 py-2.5 bg-[#08080a]/85 backdrop-blur-2xl border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.75)]"
               : "w-full max-w-6xl px-5 sm:px-7 py-3.5 bg-[#08080a]/60 backdrop-blur-xl border-white/10"
           }`}
         >
           {/* Brand Identity */}
           <a
             href="#hero"
-            className="flex items-center gap-2.5 group focus:outline-none"
+            className="flex items-center gap-2.5 group focus:outline-none shrink-0"
           >
             <span className="relative flex h-2.5 w-2.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E2FF32] opacity-75" />
@@ -82,14 +84,14 @@ export default function Navbar({ cartCount = 0, onOpenCart, isPlaying, currentTr
 
           {/* Desktop Navigation Pills */}
           <div className="hidden lg:flex items-center gap-1 bg-white/[0.03] border border-white/[0.06] rounded-full p-1">
-            {NAV_LINKS.map((link) => {
+            {navLinks.map((link) => {
               const id = link.href.replace("#", "");
               const isActive = activeSection === id;
               return (
                 <a
                   key={link.href}
                   href={link.href}
-                  className={`relative px-4 py-1.5 rounded-full text-[11px] uppercase tracking-[0.16em] font-medium transition-colors duration-200 ${
+                  className={`relative px-3.5 py-1.5 rounded-full text-[11px] uppercase tracking-[0.16em] font-medium transition-colors duration-200 ${
                     isActive ? "text-black" : "text-zinc-400 hover:text-white"
                   }`}
                 >
@@ -106,24 +108,53 @@ export default function Navbar({ cartCount = 0, onOpenCart, isPlaying, currentTr
             })}
           </div>
 
-          {/* Right Controls: Live EQ + Socials + Bag Button */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          {/* Right Controls: Language Switcher + Live EQ + Socials + Bag Button */}
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            {/* Bilingual ES / EN Spring Toggle Pill */}
+            <div
+              role="group"
+              aria-label="Selector de idioma / Language switcher"
+              className="flex items-center p-0.5 rounded-full bg-white/[0.05] border border-white/12"
+            >
+              {["es", "en"].map((code) => {
+                const active = lang === code;
+                return (
+                  <button
+                    key={code}
+                    onClick={() => setLang(code)}
+                    className={`relative px-2.5 py-1 rounded-full text-[10px] font-mono-tech font-bold uppercase tracking-widest transition-colors cursor-pointer ${
+                      active ? "text-black" : "text-zinc-400 hover:text-white"
+                    }`}
+                  >
+                    {active && (
+                      <motion.span
+                        layoutId="langSwitchPill"
+                        transition={{ type: "spring", stiffness: 420, damping: 30 }}
+                        className="absolute inset-0 rounded-full bg-[#E2FF32]"
+                      />
+                    )}
+                    <span className="relative z-10">{code}</span>
+                  </button>
+                );
+              })}
+            </div>
+
             {currentTrack && (
               <button
                 onClick={onTogglePlay}
-                title={isPlaying ? "Pausar audio" : "Reproducir audio"}
-                className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-[10px] uppercase tracking-widest text-zinc-300 active:scale-[0.97] transition"
+                title={isPlaying ? t.nav.pauseAudio : t.nav.playAudio}
+                className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-[10px] uppercase tracking-widest text-zinc-300 active:scale-[0.97] transition cursor-pointer"
               >
                 <span className="flex items-end gap-[2px] h-3">
                   <span className={`w-[2px] h-full bg-[#E2FF32] rounded-full ${isPlaying ? "eq-bar-1" : "scale-y-30"}`} />
                   <span className={`w-[2px] h-full bg-[#E2FF32] rounded-full ${isPlaying ? "eq-bar-2" : "scale-y-50"}`} />
                   <span className={`w-[2px] h-full bg-[#E2FF32] rounded-full ${isPlaying ? "eq-bar-3" : "scale-y-25"}`} />
                 </span>
-                <span className="max-w-[90px] truncate">{currentTrack.title}</span>
+                <span className="max-w-[85px] truncate">{currentTrack.title}</span>
               </button>
             )}
 
-            <div className="hidden md:flex items-center gap-1.5">
+            <div className="hidden md:flex items-center gap-1">
               <a
                 href="https://www.instagram.com/jardymales"
                 target="_blank"
@@ -147,9 +178,9 @@ export default function Navbar({ cartCount = 0, onOpenCart, isPlaying, currentTr
             {/* Button-in-Button Merch Bag Trigger */}
             <button
               onClick={onOpenCart}
-              className="group relative flex items-center gap-2.5 bg-white text-black pl-4 pr-1.5 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-[0.14em] hover:bg-[#E2FF32] active:scale-[0.97] transition-all duration-200 cursor-pointer"
+              className="group relative flex items-center gap-2 bg-white text-black pl-3.5 pr-1.5 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-[0.14em] hover:bg-[#E2FF32] active:scale-[0.97] transition-all duration-200 cursor-pointer"
             >
-              <span>Drop</span>
+              <span className="hidden sm:inline">{t.nav.dropBtn}</span>
               <span className="w-6 h-6 rounded-full bg-black text-white flex items-center justify-center text-[10px] font-bold group-hover:scale-105 transition-transform">
                 {cartCount > 0 ? cartCount : <ShoppingBag size={12} strokeWidth={2} />}
               </span>
@@ -158,7 +189,7 @@ export default function Navbar({ cartCount = 0, onOpenCart, isPlaying, currentTr
             {/* Morphing Hamburger Button (Mobile) */}
             <button
               onClick={() => setIsOpen((prev) => !prev)}
-              aria-label="Menú"
+              aria-label="Menu"
               className="lg:hidden relative w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white active:scale-95 transition"
             >
               <div className="w-4 h-3 relative flex flex-col justify-between">
@@ -194,10 +225,19 @@ export default function Navbar({ cartCount = 0, onOpenCart, isPlaying, currentTr
             className="fixed inset-0 z-30 bg-[#050505]/95 backdrop-blur-2xl flex flex-col justify-between px-6 pt-28 pb-10 lg:hidden"
           >
             <div className="space-y-3">
-              <p className="text-[10px] uppercase tracking-[0.28em] text-zinc-500 mb-6">
-                Navegación Oficial • Austin TX
-              </p>
-              {NAV_LINKS.map((link, idx) => (
+              <div className="flex items-center justify-between mb-6">
+                <p className="text-[10px] uppercase tracking-[0.28em] text-zinc-500">
+                  {t.nav.mobileHeader}
+                </p>
+                <button
+                  onClick={() => setLang(lang === "es" ? "en" : "es")}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.06] border border-white/15 text-[11px] font-mono-tech uppercase tracking-widest text-[#E2FF32]"
+                >
+                  <Globe size={12} /> {lang === "es" ? "Switch to EN" : "Cambiar a ES"}
+                </button>
+              </div>
+
+              {navLinks.map((link, idx) => (
                 <motion.div
                   key={link.href}
                   initial={{ y: 28, opacity: 0 }}

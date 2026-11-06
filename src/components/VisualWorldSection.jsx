@@ -1,8 +1,10 @@
 import React, { useState, useRef } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
 import { Play, X, Radio, Flame, Mic2 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function VisualWorldSection({ onPlayFeatured }) {
+  const { t } = useLanguage();
   const [videoModalOpen, setVideoModalOpen] = useState(false);
   const containerRef = useRef(null);
 
@@ -21,7 +23,6 @@ export default function VisualWorldSection({ onPlayFeatured }) {
       className="relative py-28 sm:py-36 px-4 bg-[#070709] border-t border-white/[0.06] overflow-hidden"
     >
       <div className="max-w-7xl mx-auto">
-        {/* Editorial Heading */}
         <motion.div
           initial={{ y: 32, opacity: 0 }}
           whileInView={{ y: 0, opacity: 1 }}
@@ -31,20 +32,19 @@ export default function VisualWorldSection({ onPlayFeatured }) {
         >
           <div>
             <span className="inline-block px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-[10px] uppercase tracking-[0.22em] text-zinc-400 mb-4">
-              Dirección Creativa & Visuales
+              {t.visual.eyebrow}
             </span>
             <h2 className="font-display font-extrabold text-4xl sm:text-6xl uppercase tracking-[-0.03em] leading-[0.95]">
-              Universo <span className="text-stroke">Nocturno</span>
+              {t.visual.titleMain} <span className="text-stroke">{t.visual.titleStroke}</span>
             </h2>
           </div>
           <p className="text-sm sm:text-base text-zinc-400 max-w-md leading-relaxed">
-            Cada lanzamiento se construye como un cortometraje urbano: asfalto mojado, sesiones de madrugada en Austin y estética cruda sin filtros.
+            {t.visual.description}
           </p>
         </motion.div>
 
         {/* Asymmetrical Bento Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Card 1: Large Visualizer Feature (8 cols) */}
           <motion.div
             style={{ y: parallaxSlow }}
             className="lg:col-span-8 double-bezel-outer group cursor-pointer"
@@ -60,7 +60,7 @@ export default function VisualWorldSection({ onPlayFeatured }) {
 
               <div className="relative z-10 flex items-center justify-between">
                 <span className="px-3.5 py-1.5 rounded-full bg-black/70 backdrop-blur-md border border-white/15 text-[10px] uppercase tracking-[0.2em] text-[#E2FF32] font-bold">
-                  Visualizer Oficial • 4K
+                  {t.visual.visualizerBadge}
                 </span>
                 <span className="text-xs font-mono-tech text-zinc-300 bg-black/60 px-3 py-1 rounded-full border border-white/10">
                   RED RIVER DISTRICT, ATX
@@ -69,9 +69,9 @@ export default function VisualWorldSection({ onPlayFeatured }) {
 
               <div className="relative z-10 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
                 <div>
-                  <p className="font-editorial italic text-2xl text-[#E2FF32]">Capítulo I</p>
+                  <p className="font-editorial italic text-2xl text-[#E2FF32]">{t.visual.chapter}</p>
                   <h3 className="font-display font-extrabold text-3xl sm:text-5xl uppercase tracking-tight text-white mt-1">
-                    Noche en Austin (Film)
+                    {t.visual.filmTitle}
                   </h3>
                 </div>
 
@@ -82,7 +82,6 @@ export default function VisualWorldSection({ onPlayFeatured }) {
             </div>
           </motion.div>
 
-          {/* Card 2: Studio Manifesto Stack (4 cols) */}
           <motion.div
             style={{ y: parallaxFast }}
             className="lg:col-span-4 flex flex-col gap-6"
@@ -94,17 +93,17 @@ export default function VisualWorldSection({ onPlayFeatured }) {
                 </div>
                 <div className="my-6">
                   <p className="text-[10px] uppercase tracking-[0.22em] text-zinc-500 mb-2">
-                    01 // ADN Sonoro
+                    {t.visual.card1Tag}
                   </p>
                   <h4 className="font-display font-bold text-2xl uppercase tracking-tight mb-3">
-                    De la libreta al sub-bajo 808
+                    {t.visual.card1Title}
                   </h4>
                   <p className="text-sm text-zinc-400 leading-relaxed">
-                    Composición de autor fusionada con percusión urbana pesada, sintetizadores analógicos oscuros y melodías que conectan en vivo.
+                    {t.visual.card1Body}
                   </p>
                 </div>
                 <div className="text-[11px] font-mono-tech uppercase tracking-widest text-zinc-500 pt-4 border-t border-white/10">
-                  Frecuencia Base • 432Hz / 94 BPM
+                  {t.visual.card1Footer}
                 </div>
               </div>
             </div>
@@ -113,10 +112,10 @@ export default function VisualWorldSection({ onPlayFeatured }) {
               <div className="double-bezel-inner p-7 flex items-center justify-between gap-4 bg-[#0d0d10]">
                 <div>
                   <p className="text-[10px] uppercase tracking-[0.2em] text-[#E2FF32] font-semibold">
-                    En Rotación Continua
+                    {t.visual.card2Tag}
                   </p>
                   <p className="font-display font-extrabold text-xl uppercase mt-1">
-                    Texas Urban Wave
+                    {t.visual.card2Title}
                   </p>
                 </div>
                 <div className="w-12 h-12 rounded-full bg-white/[0.05] border border-white/10 flex items-center justify-center text-white">
@@ -156,7 +155,7 @@ export default function VisualWorldSection({ onPlayFeatured }) {
 
                 <div className="relative z-10 flex items-center justify-between">
                   <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E2FF32] text-black text-[10px] font-bold uppercase tracking-widest">
-                    <Radio size={12} /> Visualizer Canvas Activo
+                    <Radio size={12} /> {t.visual.modalActive}
                   </span>
                   <button
                     onClick={() => setVideoModalOpen(false)}
@@ -168,15 +167,13 @@ export default function VisualWorldSection({ onPlayFeatured }) {
 
                 <div className="relative z-10 text-center space-y-4 my-auto">
                   <p className="font-editorial italic text-2xl sm:text-3xl text-zinc-200">
-                    “Luces rojas en el vidrio empañado...”
+                    {t.visual.modalQuote}
                   </p>
                   <button
-                    onClick={() => {
-                      onPlayFeatured();
-                    }}
+                    onClick={() => onPlayFeatured()}
                     className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white text-black font-bold text-xs uppercase tracking-[0.18em] hover:bg-[#E2FF32] transition cursor-pointer"
                   >
-                    <Play size={15} fill="black" /> Activar Audio Sintetizado en Vivo
+                    <Play size={15} fill="black" /> {t.visual.modalCta}
                   </button>
                 </div>
 

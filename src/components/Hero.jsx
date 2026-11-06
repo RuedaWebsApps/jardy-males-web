@@ -1,20 +1,20 @@
 import React, { useRef } from 'react';
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'motion/react';
 import { Play, Pause, ArrowUpRight, Disc3, MapPin } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Hero({ onPlayHeroTrack, isHeroTrackPlaying }) {
+  const { t } = useLanguage();
   const sectionRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end start"],
   });
 
-  // Scroll-linked parallax layers
   const bgTextX = useTransform(scrollYProgress, [0, 1], ["0%", "-28%"]);
   const portraitY = useTransform(scrollYProgress, [0, 1], ["0%", "14%"]);
   const contentOpacity = useTransform(scrollYProgress, [0, 0.78], [1, 0.15]);
 
-  // 3D interactive mouse tilt for Editorial Portrait
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [7, -7]), { stiffness: 220, damping: 26 });
@@ -61,9 +61,8 @@ export default function Hero({ onPlayHeroTrack, isHeroTrackPlaying }) {
         className="relative z-10 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 my-auto py-8 lg:py-12"
       >
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
-          {/* Left Column: Kinetic Headline & Interactive Actions */}
+          {/* Left Column */}
           <div className="lg:col-span-7 space-y-7">
-            {/* Eyebrow Pill */}
             <motion.div
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -71,14 +70,13 @@ export default function Hero({ onPlayHeroTrack, isHeroTrackPlaying }) {
               className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/12"
             >
               <span className="px-2 py-0.5 rounded-full bg-[#E2FF32] text-black text-[9px] font-bold uppercase tracking-[0.2em]">
-                OUT NOW
+                {t.hero.outNow}
               </span>
               <span className="text-[11px] uppercase tracking-[0.2em] text-zinc-300 font-medium">
-                Nuevo Sencillo “Noche en Austin”
+                {t.hero.eyebrow}
               </span>
             </motion.div>
 
-            {/* Staggered Display Typography */}
             <div className="space-y-1">
               <div className="overflow-hidden">
                 <motion.h1
@@ -110,14 +108,13 @@ export default function Hero({ onPlayHeroTrack, isHeroTrackPlaying }) {
               </div>
             </div>
 
-            {/* Editorial Narrative */}
             <motion.p
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.65, delay: 0.18, ease: [0.23, 1, 0.32, 1] }}
               className="text-base sm:text-lg text-zinc-400 max-w-xl leading-relaxed font-normal"
             >
-              Sonido urbano nocturno, lírica cruda y pulso de estadio. Fusionando la calle latina con la energía underground de Texas en una nueva era visual y sonora.
+              {t.hero.description}
             </motion.p>
 
             {/* Nested Button-in-Button CTAs */}
@@ -131,7 +128,7 @@ export default function Hero({ onPlayHeroTrack, isHeroTrackPlaying }) {
                 onClick={onPlayHeroTrack}
                 className="group flex items-center gap-4 bg-[#E2FF32] text-black pl-6 pr-2 py-2 rounded-full font-bold text-xs uppercase tracking-[0.16em] hover:bg-white active:scale-[0.97] transition-all duration-200 cursor-pointer shadow-[0_0_40px_rgba(226,255,50,0.22)]"
               >
-                <span>{isHeroTrackPlaying ? "Pausar Preview" : "Escuchar ‘Noche en Austin’"}</span>
+                <span>{isHeroTrackPlaying ? t.hero.ctaPause : t.hero.ctaPlay}</span>
                 <span className="w-9 h-9 rounded-full bg-black text-[#E2FF32] group-hover:text-white flex items-center justify-center group-hover:scale-105 transition-transform">
                   {isHeroTrackPlaying ? <Pause size={15} /> : <Play size={15} fill="currentColor" className="ml-0.5" />}
                 </span>
@@ -141,7 +138,7 @@ export default function Hero({ onPlayHeroTrack, isHeroTrackPlaying }) {
                 href="#tour"
                 className="group flex items-center gap-3.5 bg-white/[0.04] hover:bg-white/[0.09] border border-white/15 text-white pl-6 pr-2 py-2 rounded-full font-semibold text-xs uppercase tracking-[0.16em] active:scale-[0.97] transition-all duration-200"
               >
-                <span>Fechas Tour ’26</span>
+                <span>{t.hero.ctaTour}</span>
                 <span className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">
                   <ArrowUpRight size={16} />
                 </span>
@@ -157,20 +154,20 @@ export default function Hero({ onPlayHeroTrack, isHeroTrackPlaying }) {
             >
               <div>
                 <p className="font-display font-extrabold text-xl sm:text-2xl text-white">2.2M+</p>
-                <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 mt-0.5">Streams Globales</p>
+                <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 mt-0.5">{t.hero.statStreams}</p>
               </div>
               <div>
                 <p className="font-display font-extrabold text-xl sm:text-2xl text-white">04</p>
-                <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 mt-0.5">Shows Texas ’26</p>
+                <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 mt-0.5">{t.hero.statShows}</p>
               </div>
               <div>
                 <p className="font-display font-extrabold text-xl sm:text-2xl text-[#E2FF32]">DROP 01</p>
-                <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 mt-0.5">Merch Limitado</p>
+                <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 mt-0.5">{t.hero.statMerch}</p>
               </div>
             </motion.div>
           </div>
 
-          {/* Right Column: 3D Tilt Double-Bezel Editorial Portrait + Vinyl Widget */}
+          {/* Right Column */}
           <div className="lg:col-span-5 relative" style={{ perspective: 1100 }}>
             <motion.div
               style={{ y: portraitY, rotateX, rotateY }}
@@ -184,13 +181,11 @@ export default function Hero({ onPlayHeroTrack, isHeroTrackPlaying }) {
               <div className="double-bezel-inner relative overflow-hidden aspect-[4/5]">
                 <img
                   src="/images/hero-editorial.jpg"
-                  alt="Jardy Males — Retrato Editorial Oficial"
+                  alt="Jardy Males Editorial Portrait"
                   className="w-full h-full object-cover object-center scale-[1.03] hover:scale-[1.07] transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]"
                 />
-                {/* Cinematic Vignette */}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-black/25" />
 
-                {/* Top Metadata Tag inside Frame */}
                 <div className="absolute top-4 left-4 right-4 flex items-center justify-between text-[10px] uppercase tracking-[0.2em]">
                   <span className="px-3 py-1 rounded-full bg-black/65 backdrop-blur-md border border-white/10 text-zinc-300 flex items-center gap-1.5">
                     <MapPin size={11} className="text-[#E2FF32]" /> 30.2672° N, 97.7431° W
@@ -200,7 +195,6 @@ export default function Hero({ onPlayHeroTrack, isHeroTrackPlaying }) {
                   </span>
                 </div>
 
-                {/* Floating Interactive Vinyl Single Card inside Portrait Bottom */}
                 <div
                   onClick={onPlayHeroTrack}
                   role="button"
@@ -225,7 +219,7 @@ export default function Hero({ onPlayHeroTrack, isHeroTrackPlaying }) {
                     </div>
                     <div className="pl-2">
                       <p className="text-[10px] uppercase tracking-[0.2em] text-[#E2FF32] font-semibold">
-                        {isHeroTrackPlaying ? "Reproduciendo Beat" : "Lead Single • Click Play"}
+                        {isHeroTrackPlaying ? t.hero.playingBeat : t.hero.leadSingleClick}
                       </p>
                       <p className="font-display font-bold text-sm uppercase tracking-wide text-white">
                         Noche en Austin
@@ -248,16 +242,12 @@ export default function Hero({ onPlayHeroTrack, isHeroTrackPlaying }) {
         <div className="animate-marquee flex items-center gap-8 text-xs sm:text-sm font-display font-extrabold uppercase tracking-[0.22em]">
           {Array.from({ length: 2 }).map((_, loopIdx) => (
             <div key={loopIdx} className="flex items-center gap-8 shrink-0">
-              <span>JARDY MALES</span>
-              <span>✦</span>
-              <span>NOCHE EN AUSTIN — DISPONIBLE AHORA</span>
-              <span>✦</span>
-              <span>TEXAS TOUR 2026</span>
-              <span>✦</span>
-              <span>DROP 001 STREETWEAR CAPSULE</span>
-              <span>✦</span>
-              <span>DESDE AUSTIN PAL MUNDO</span>
-              <span>✦</span>
+              {t.hero.marquee.map((phrase, idx) => (
+                <React.Fragment key={idx}>
+                  <span>{phrase}</span>
+                  <span>✦</span>
+                </React.Fragment>
+              ))}
             </div>
           ))}
         </div>

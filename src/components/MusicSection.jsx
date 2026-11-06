@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Play, Pause, ArrowUpRight, Disc3, Sparkles } from 'lucide-react';
 import { RELEASES } from '../data/artistData';
+import { useLanguage } from '../context/LanguageContext';
 
-function GenerativeCover({ track }) {
+function GenerativeCover({ track, lang }) {
   if (track.cover) {
     return (
       <img
@@ -28,7 +29,7 @@ function GenerativeCover({ track }) {
       </div>
       <div>
         <p className="font-editorial italic text-2xl text-white/80 leading-none mb-1">
-          {track.subtitle}
+          {track.subtitle[lang]}
         </p>
         <p className="font-display font-extrabold text-3xl uppercase tracking-tight text-white leading-none">
           {track.title}
@@ -39,13 +40,20 @@ function GenerativeCover({ track }) {
 }
 
 export default function MusicSection({ currentTrack, isPlaying, onSelectTrack }) {
-  const [filter, setFilter] = useState("Todos");
+  const { lang, t } = useLanguage();
+  const [filter, setFilter] = useState("all");
   const activeTrack = currentTrack || RELEASES[0];
 
+  const filterTabs = [
+    { key: "all", label: t.music.filterAll },
+    { key: "single", label: t.music.filterSingles },
+    { key: "ep", label: t.music.filterEP },
+  ];
+
   const filteredReleases =
-    filter === "Todos"
+    filter === "all"
       ? RELEASES
-      : RELEASES.filter((r) => r.type.toLowerCase() === filter.toLowerCase());
+      : RELEASES.filter((r) => r.type.toLowerCase() === filter);
 
   return (
     <section id="musica" className="relative py-28 sm:py-36 px-4 bg-[#050505]">
@@ -60,21 +68,24 @@ export default function MusicSection({ currentTrack, isPlaying, onSelectTrack })
         >
           <div>
             <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-[10px] uppercase tracking-[0.22em] text-[#E2FF32] font-semibold mb-4">
-              <Sparkles size={11} /> Catálogo Sonoro Oficial
+              <Sparkles size={11} /> {t.music.eyebrow}
             </span>
             <h2 className="font-display font-extrabold text-4xl sm:text-6xl uppercase tracking-[-0.03em] leading-[0.95]">
-              Música & <span className="font-editorial italic font-normal text-zinc-300">Lanzamientos</span>
+              {t.music.titleMain}{" "}
+              <span className="font-editorial italic font-normal text-zinc-300">
+                {t.music.titleAccent}
+              </span>
             </h2>
           </div>
 
           {/* Filter Tabs with Spring Shared Pill */}
           <div className="inline-flex items-center gap-1 p-1 rounded-full bg-white/[0.03] border border-white/10 self-start md:self-auto">
-            {["Todos", "Single", "EP"].map((tab) => {
-              const active = filter === tab;
+            {filterTabs.map((tab) => {
+              const active = filter === tab.key;
               return (
                 <button
-                  key={tab}
-                  onClick={() => setFilter(tab)}
+                  key={tab.key}
+                  onClick={() => setFilter(tab.key)}
                   className={`relative px-5 py-2 rounded-full text-xs uppercase tracking-[0.16em] font-semibold transition-colors cursor-pointer ${
                     active ? "text-black" : "text-zinc-400 hover:text-white"
                   }`}
@@ -86,7 +97,7 @@ export default function MusicSection({ currentTrack, isPlaying, onSelectTrack })
                       className="absolute inset-0 rounded-full bg-[#E2FF32]"
                     />
                   )}
-                  <span className="relative z-10">{tab === "Single" ? "Singles" : tab}</span>
+                  <span className="relative z-10">{tab.label}</span>
                 </button>
               );
             })}
@@ -104,9 +115,7 @@ export default function MusicSection({ currentTrack, isPlaying, onSelectTrack })
             className="lg:col-span-5 double-bezel-outer lg:sticky lg:top-28"
           >
             <div className="double-bezel-inner p-6 sm:p-8 relative overflow-hidden">
-              {/* Cover + Sliding Vinyl Disc */}
               <div className="relative mx-auto max-w-[290px] sm:max-w-[310px] mb-8">
-                {/* Physical Vinyl Record Behind Sleeve */}
                 <div
                   className={`hidden sm:flex absolute top-3 bottom-3 aspect-square rounded-full bg-gradient-to-tr from-zinc-950 via-zinc-800 to-zinc-950 border border-white/15 shadow-2xl items-center justify-center transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${
                     isPlaying && currentTrack?.id === activeTrack.id
@@ -125,7 +134,6 @@ export default function MusicSection({ currentTrack, isPlaying, onSelectTrack })
                   </div>
                 </div>
 
-                {/* Main Sleeve */}
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={activeTrack.id}
@@ -135,7 +143,7 @@ export default function MusicSection({ currentTrack, isPlaying, onSelectTrack })
                     transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
                     className="relative z-10 aspect-square rounded-2xl overflow-hidden border border-white/15 shadow-[0_24px_60px_rgba(0,0,0,0.85)]"
                   >
-                    <GenerativeCover track={activeTrack} />
+                    <GenerativeCover track={activeTrack} lang={lang} />
                   </motion.div>
                 </AnimatePresence>
               </div>
@@ -144,7 +152,9 @@ export default function MusicSection({ currentTrack, isPlaying, onSelectTrack })
               <div className="space-y-4">
                 <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.18em] text-zinc-400">
                   <span>{activeTrack.type} • {activeTrack.year}</span>
-                  <span className="text-[#E2FF32] font-semibold">{activeTrack.streams} Streams</span>
+                  <span className="text-[#E2FF32] font-semibold">
+                    {activeTrack.streams} {t.music.streamsSuffix}
+                  </span>
                 </div>
 
                 <h3 className="font-display font-extrabold text-2xl sm:text-3xl uppercase tracking-tight">
@@ -152,17 +162,18 @@ export default function MusicSection({ currentTrack, isPlaying, onSelectTrack })
                 </h3>
 
                 <p className="font-editorial italic text-lg text-zinc-400 leading-snug">
-                  {activeTrack.lyricSnippet}
+                  {activeTrack.lyricSnippet[lang]}
                 </p>
 
-                {/* Play Button + External Streaming Links */}
                 <div className="pt-3 flex flex-wrap items-center gap-3">
                   <button
                     onClick={() => onSelectTrack(activeTrack)}
                     className="group flex-1 flex items-center justify-between bg-white hover:bg-[#E2FF32] text-black pl-5 pr-2 py-2 rounded-full text-xs font-bold uppercase tracking-[0.16em] active:scale-[0.97] transition-all cursor-pointer"
                   >
                     <span>
-                      {isPlaying && currentTrack?.id === activeTrack.id ? "Pausar Beat" : "Escuchar Preview"}
+                      {isPlaying && currentTrack?.id === activeTrack.id
+                        ? t.music.pauseBeat
+                        : t.music.playPreview}
                     </span>
                     <span className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center">
                       {isPlaying && currentTrack?.id === activeTrack.id ? (
@@ -174,7 +185,6 @@ export default function MusicSection({ currentTrack, isPlaying, onSelectTrack })
                   </button>
                 </div>
 
-                {/* Streaming Platforms */}
                 <div className="pt-4 border-t border-white/10 flex items-center justify-between gap-2 text-[11px] uppercase tracking-[0.16em] text-zinc-400">
                   <a
                     href={activeTrack.platforms.spotify}
@@ -231,7 +241,6 @@ export default function MusicSection({ currentTrack, isPlaying, onSelectTrack })
                     }`}
                   >
                     <div className="double-bezel-inner p-4 sm:p-6 flex items-center justify-between gap-4 relative overflow-hidden">
-                      {/* Subtle Hover Glow */}
                       <div
                         className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                         style={{
@@ -240,7 +249,6 @@ export default function MusicSection({ currentTrack, isPlaying, onSelectTrack })
                       />
 
                       <div className="relative z-10 flex items-center gap-4 sm:gap-6 min-w-0">
-                        {/* Track Index or Animated EQ */}
                         <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white/[0.04] border border-white/10 group-hover:border-white/25 flex items-center justify-center shrink-0 transition-colors">
                           {isTrackPlaying ? (
                             <div className="flex items-end gap-[3px] h-5">
@@ -280,7 +288,7 @@ export default function MusicSection({ currentTrack, isPlaying, onSelectTrack })
                             {track.title}
                           </h3>
                           <p className="text-xs text-zinc-500 truncate mt-0.5">
-                            {track.subtitle} • {track.year}
+                            {track.subtitle[lang]} • {track.year}
                           </p>
                         </div>
                       </div>
